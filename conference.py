@@ -602,6 +602,9 @@ class ConferenceApi(remote.Service):
 # 	- https://discussions.udacity.com/t/p4-createsession/42195/7
 #	- https://discussions.udacity.com/t/error-deleting-the-websafekey-from-sessionform-to-make-a-session/42212/3
 # 	- https://discussions.udacity.com/t/createsession-sessionform-websafeconferencekey-what-should-be-the-request-class/41297
+#   - https://discussions.udacity.com/t/addsessiontowishlist-parameter-clarification/37642/11
+#   - https://discussions.udacity.com/t/memcache-taskqueue-doesnt-display-enough-sessions/42351/2
+#   - https://discussions.udacity.com/t/createsession-sessionform-websafeconferencekey-endpoint/29851
     def _createSessionObject(self, request):
         """Create Session Object, w/ createSession method returns the request ."""
         #get the current user logged in

@@ -125,26 +125,26 @@ class ConferenceQueryForms(messages.Message):
 
 class Session(ndb.Model):
     """Session -- Session object"""
-    name            = ndb.StringProperty(required=True)
-    highlights      = ndb.StringProperty()
-    speaker         = ndb.StringProperty()
-    duration        = ndb.IntegerProperty()
-    typeOfSession   = ndb.StringProperty()
-    date            = ndb.DateProperty()
-    startTime       = ndb.TimeProperty()
+    name = ndb.StringProperty(required=True)
+    highlights = ndb.StringProperty()
+    speaker = ndb.StringProperty()
+    duration = ndb.IntegerProperty()
+    typeOfSession = ndb.StringProperty()
+    date = ndb.DateProperty()
+    startTime = ndb.TimeProperty()
 
 
 class SessionForm(messages.Message):
     """Session -- Session outbound form messge"""
-    name            = messages.StringField(1)
-    highlights      = messages.StringField(2)
-    speaker         = messages.StringField(3)
-    duration        = messages.IntegerField(4)
-    typeOfSession   = messages.StringField(5)
-    date            = messages.StringField(6)
-    startTime       = messages.StringField(7)
-    websafeKey      = messages.StringField(8)
-    conferenceName  = messages.StringField(9)
+    name = messages.StringField(1)
+    highlights = messages.StringField(2)
+    speaker = messages.StringField(3)
+    duration = messages.IntegerField(4)
+    typeOfSession = messages.StringField(5)
+    date = messages.StringField(6)
+    startTime = messages.StringField(7)
+    websafeKey = messages.StringField(8)
+    conferenceName = messages.StringField(9)
     websafeConferenceKey = messages.StringField(10)
 
 
@@ -155,19 +155,19 @@ class SessionForms(messages.Message):
 
 class SessionsByTypeForm(messages.Message):
     """SessionByTypeForm -- sessions by type"""
-    typeOfSession        = messages.StringField(1)
+    typeOfSession = messages.StringField(1)
     websafeConferenceKey = messages.StringField(2)
 
 
 class SessionsByNameForm(messages.Message):
     """SessionByNameForm -- sessions by name"""
-    name        = messages.StringField(1)
+    name = messages.StringField(1)
     websafeConferenceKey = messages.StringField(2)
 
 
 class SessionsByDateForm(messages.Message):
     """SessionByDateForm -- sessions by Date"""
-    date                 = messages.IntegerField(1)
+    date = messages.IntegerField(1)
     websafeConferenceKey = messages.StringField(2)
 
 
