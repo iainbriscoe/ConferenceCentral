@@ -36,7 +36,7 @@ from models import ConferenceForms
 from models import ConferenceQueryForm
 from models import ConferenceQueryForms
 from models import TeeShirtSize
-
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 from models import Session
 from models import SessionForm
 from models import SessionForms
@@ -45,7 +45,7 @@ from models import SessionsByNameForm
 from models import SessionsByDurationForm
 from models import SessionsBySpeakerForm
 from models import WishlistForm
-
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 from settings import WEB_CLIENT_ID
 from settings import ANDROID_CLIENT_ID
 from settings import IOS_CLIENT_ID
@@ -68,14 +68,14 @@ DEFAULTS = {
     "seatsAvailable": 0,
     "topics": [ "Default", "Topic" ],
 }
-
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SESSION_DEFAULTS = {
     "highlights": "To Be Announced",
     "speaker": "To Be Announced",
     "duration": 60,
     "typeOfSession": "To Be Announced",
 }
-
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 OPERATORS = {
             'EQ':   '=',
@@ -687,8 +687,6 @@ class ConferenceApi(remote.Service):
                 setattr(sf, field.name, session.key.urlsafe())
         sf.check_initialized()
         return sf
-
-
     
     @endpoints.method(SESS_POST_REQUEST, SessionForm,
                       path = 'session',
@@ -764,6 +762,7 @@ class ConferenceApi(remote.Service):
        
 
 # - - - Wishlists - - - - - - - - - - - - - - - - -
+#referenced udacity forms during conception
     @endpoints.method(WishlistForm, ProfileForm,
                       path="profile/addSessionToWishlist",
                       http_method="POST",
@@ -834,7 +833,7 @@ class ConferenceApi(remote.Service):
         #session is not in wishlist
         else:
             return 'This session is not in your wishlist. You cannot delete a session that is not in your wishlist'
-#referenced udacity forms during conception
+
 
 
 # - - - Featured Speaker - - - - - - - - - - - - - - - - -
