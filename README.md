@@ -34,7 +34,24 @@ reflect the respective client IDs you have registered in the
 
 
 ##Task 1
-I thought about creating speaker as its own class which could be useful in order to define more information about the speaker but decided that it didn't actually need that the conference central app in my eyes is to be used as a more organizational type tool so having more information about a speaker wouldnt be necessary. When logging on and recording that you're organizing and attending an event you really just need to know who your speaker is, That being said, I defined the speaker as a string
+Sessions are implemented as children of conferences and rely on their conference key to exist and be located. That way we can always find and organize the created sessions by their associated conferences. This just makes sense, the sessions only exist as part of a conference otherwise they dont really mean anything. Because of that as far as a design choice goes it only made sense to create sessions that solely rely on their parent conference rather than be free floating. I thought about creating speaker as its own class which could be useful in order to define more information about the speaker but decided that it didn't actually need that the conference central app in my eyes is to be used as a more organizational type tool so having more information about a speaker wouldnt be necessary. When logging on and recording that you're organizing and attending an event you really just need to know who your speaker is, That being said, I defined the speaker as a string.
+
+
+createSession -> create a new session as a part of the given conference
+
+getConferenceSessions -> get all of the sessions associated with a given conference 
+
+getConferenceSessionsByType -> get all of the sessions by type with a given conference
+
+getConferenceSessionsBySpeaker -> get all of the sessions by speaker
+
+getConferenceSessionsByName -> get all of the sessions by Name with a given conference
+
+getConferenceSessionsByDate -> get all of the sessions by Date with a given conference
+
+
+
+
 
 ##Task 3
 Query - getConferenceSessionByName
@@ -49,6 +66,7 @@ this query task is to get all the sessions that occur on a given date.
 
 these two queries are useful because if someone is looking to attend a session of a particular name they have the ability to search by it or date they can find what is going on and join accordingly. 
 
-
 Query Problem. 
-I believe the issue can be solved using the combinations of both of the two queries \. You could collect all of the sessions on a span of days and based on that query collect all of the sessions that occur before 1900 hours. These queries dont touch is session type, So i guess the solution would just require one more query which then based off the previous queries gets all the sessions of non workshop type.
+The Query problem is that it involved querying with inequalities, in that app engine, specifically datastore cannot handle mutliple inequality filters. 
+
+One of the solutions to this problem is to change how you view it and query it. Instead of searching for != workshops you can just specifically query all the other types of sessions. So this a more comlicated query in some respects because its bigger but solved the problem by stating the inverse of the inequality.  

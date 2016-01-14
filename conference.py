@@ -42,9 +42,10 @@ from models import SessionForm
 from models import SessionForms
 from models import SessionsByTypeForm
 from models import SessionsByNameForm
-from models import SessionsByDurationForm
+from models import SessionsByDateForm
 from models import SessionsBySpeakerForm
 from models import WishlistForm
+from google.net.proto.ProtocolBuffer import ProtocolBufferDecodeError
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 from settings import WEB_CLIENT_ID
 from settings import ANDROID_CLIENT_ID
@@ -659,10 +660,10 @@ class ConferenceApi(remote.Service):
         sessions = Session.query(Session.speaker == data['speaker']).count()
         #if there is more than one speaker set the featured
         if sessions > 1:
-            taskqueue.add(params={'speaker': data['speaker']}, url='/tasks/set_featured_speaker')
+            taskqueue.add(params={'speaker': data['speaker'], 'websafeConferencekey': c_key}, url='/tasks/set_featured_speaker')
 
-        return self._copySessionToForm(request)
-
+        #return self._copySessionToForm(request)
+        return self._copySessionToForm(s_key.get())
    
     def _copySessionToForm(self, session):
         """allocate data from Session to SessionForm."""
@@ -717,8 +718,13 @@ class ConferenceApi(remote.Service):
             name='getConferenceSessionsByType')
     def getConferenceSessionsByType(self, request):
         """Get conference sessions by the type of session"""
+
+        #the conference via the websafeconferenceKey
+        conf = ndb.Key(urlsafe=request.websafeConferenceKey).get().key
+        #the session contained withing the conference 
+        sessions = Session.query(ancestor=conf)
         #get all of the sessions with the specified type 
-        sessions = Session.query(Session.typeOfSession == request.typeOfSession)
+        sessions = session.query(Session.typeOfSession == request.typeOfSession)
         return SessionForms(
             items=[self._copySessionToForm(session) for session in sessions]
         )
@@ -742,8 +748,12 @@ class ConferenceApi(remote.Service):
             name='getConferenceSessionsByName')
     def getConferenceSessionsByName(self, request):
         """Get conference sessions by the name of session """
+        #the conference via the websafeconferenceKey
+        conf = ndb.Key(urlsafe=request.websafeConferenceKey).get().key
+        #the session contained withing the conference 
+        sessions = Session.query(ancestor=conf)
         #get all of the sessions with the specified name 
-        sessions = Session.query(Session.name == request.name)
+        sessions = session.query(Session.name == request.name)
         return SessionForms(
             items=[self._copySessionToForm(session) for session in sessions]
         )
@@ -754,8 +764,12 @@ class ConferenceApi(remote.Service):
             name='getConferenceSessionsByDate')
     def getConferenceSessionsByDate(self, request):
         """Get conference sessions by the date of the session ."""
+        #the conference via the websafeconferenceKey
+        conf = ndb.Key(urlsafe=request.websafeConferenceKey).get().key
+        #the session contained withing the conference 
+        sessions = Session.query(ancestor=conf)
         #get all of the sessions with the given duraction
-        sessions = Session.query(Session.date == request.date)
+        sessions = session.query(Session.date == request.date)
         return SessionForms(
             items=[self._copySessionToForm(session) for session in sessions]
         )
@@ -781,9 +795,10 @@ class ConferenceApi(remote.Service):
         #could fail due to key not existing, or inability to decode
         try:
         	#strip key 
-            websafe_key = ndb.Key(urlsafe=websafe_key)
+            #websafe_key = ndb.Key(urlsafe=websafe_key)
             #if the key is not already in the users session wishlist - add it 
             if websafe_key not in profile.websafeSessionKey:
+            	profile.websafeSessionKey.append(websafe_key.urlsafe())
                 return self._doProfile(request)
             #session already in wishlist
             else:
@@ -829,6 +844,8 @@ class ConferenceApi(remote.Service):
         sessionKey = request.websafeSessionKey
         #if session is in wishlist remove it
         if sessionKey in profile.websafeSessionKey:
+        	profile.websafeSessionKey.remove(request.sessionKey)
+       		profile.put()
             return self._doProfile(request)
         #session is not in wishlist
         else:
