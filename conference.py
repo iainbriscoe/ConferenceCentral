@@ -657,10 +657,10 @@ class ConferenceApi(remote.Service):
 
         Session(**data).put()
         #get the number of speakers 
-        sessions = Session.query(Session.speaker == data['speaker']).count()
+        #sessions = Session.query(Session.speaker == data['speaker']).count()
         #if there is more than one speaker set the featured
-        if sessions > 1:
-            taskqueue.add(params={'speaker': data['speaker'], 'websafeConferencekey': c_key}, url='/tasks/set_featured_speaker')
+        #if sessions > 1:
+        #    taskqueue.add(params={'speaker': data['speaker'], 'websafeConferencekey': c_key}, url='/tasks/set_featured_speaker')
 
         #return self._copySessionToForm(request)
         return self._copySessionToForm(s_key.get())
@@ -764,12 +764,13 @@ class ConferenceApi(remote.Service):
             name='getConferenceSessionsByDate')
     def getConferenceSessionsByDate(self, request):
         """Get conference sessions by the date of the session ."""
+        requestDate = datetime.strptime(request.date, "%Y-%m-%d").date()
         #the conference via the websafeconferenceKey
         conf = ndb.Key(urlsafe=request.websafeConferenceKey).get().key
         #the session contained withing the conference 
         sessions = Session.query(ancestor=conf)
         #get all of the sessions with the given duraction
-        sessions = session.query(Session.date == request.date)
+        sessions = session.query(Session.date == requestDate)
         return SessionForms(
             items=[self._copySessionToForm(session) for session in sessions]
         )
@@ -844,8 +845,8 @@ class ConferenceApi(remote.Service):
         sessionKey = request.websafeSessionKey
         #if session is in wishlist remove it
         if sessionKey in profile.websafeSessionKey:
-        	profile.websafeSessionKey.remove(request.sessionKey)
-       		profile.put()
+            profile.websafeSessionKey.remove(request.sessionKey)
+       	    profile.put()
             return self._doProfile(request)
         #session is not in wishlist
         else:

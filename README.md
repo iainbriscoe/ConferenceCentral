@@ -70,3 +70,12 @@ Query Problem.
 The Query problem is that it involved querying with inequalities, in that app engine, specifically datastore cannot handle mutliple inequality filters. 
 
 One of the solutions to this problem is to change how you view it and query it. Instead of searching for != workshops you can just specifically query all the other types of sessions. So this a more comlicated query in some respects because its bigger but solved the problem by stating the inverse of the inequality.  
+-> to expand: 
+instead of searching for 
+session.type != workshop && session.time != 7 (altered for simplicity)
+you can use the inverse of one of the queries that way only one inequality is used. The Documentation defines that use of mutliple inequalities is not allowed. that being said a query where the session type of what is being searched for rather than what is not, is being used.
+session.type === [lecture, powerpoint....] && session.time != 7 (altered for simplicity)
+--> if this does not solve the problem you can impliment it using a few different queries 
+the first query, queries all sessions returns the keys that arent workshops 
+the second query, queries previous keys for sessions before 7 
+
