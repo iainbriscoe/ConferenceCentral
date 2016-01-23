@@ -73,6 +73,7 @@ DEFAULTS = {
 SESSION_DEFAULTS = {
     "highlights": "To Be Announced",
     "speaker": "To Be Announced",
+    "date": "0000-00-00",
     "duration": 60,
     "typeOfSession": "To Be Announced",
 }
@@ -659,8 +660,9 @@ class ConferenceApi(remote.Service):
         #get the number of speakers 
         #sessions = Session.query(Session.speaker == data['speaker']).count()
         #if there is more than one speaker set the featured
-        #if sessions > 1:
-        #    taskqueue.add(params={'speaker': data['speaker'], 'websafeConferencekey': c_key}, url='/tasks/set_featured_speaker')
+        
+        if sessions > 1:
+            taskqueue.add(params={'speaker': data['speaker'], 'websafeConferencekey': c_key}, url='/tasks/set_featured_speaker')
 
         #return self._copySessionToForm(request)
         return self._copySessionToForm(s_key.get())
@@ -722,9 +724,9 @@ class ConferenceApi(remote.Service):
         #the conference via the websafeconferenceKey
         conf = ndb.Key(urlsafe=request.websafeConferenceKey).get().key
         #the session contained withing the conference 
-        sessions = Session.query(ancestor=conf)
+        sessionAll = Session.query(ancestor=conf)
         #get all of the sessions with the specified type 
-        sessions = session.query(Session.typeOfSession == request.typeOfSession)
+        sessions = sessionAll.filter(Session.typeOfSession == request.typeOfSession)
         return SessionForms(
             items=[self._copySessionToForm(session) for session in sessions]
         )
@@ -753,7 +755,7 @@ class ConferenceApi(remote.Service):
         #the session contained withing the conference 
         sessions = Session.query(ancestor=conf)
         #get all of the sessions with the specified name 
-        sessions = session.query(Session.name == request.name)
+        sessions = sessions.filter(Session.name == request.name)
         return SessionForms(
             items=[self._copySessionToForm(session) for session in sessions]
         )
@@ -764,13 +766,14 @@ class ConferenceApi(remote.Service):
             name='getConferenceSessionsByDate')
     def getConferenceSessionsByDate(self, request):
         """Get conference sessions by the date of the session ."""
-        requestDate = datetime.strptime(request.date, "%Y-%m-%d").date()
+        #if request.date: 
+        #requestDate = datetime.strptime(request.date, "%Y-%m-%d")
         #the conference via the websafeconferenceKey
         conf = ndb.Key(urlsafe=request.websafeConferenceKey).get().key
         #the session contained withing the conference 
         sessions = Session.query(ancestor=conf)
         #get all of the sessions with the given duraction
-        sessions = session.query(Session.date == requestDate)
+        sessions = sessions.filter(Session.date == request.date)
         return SessionForms(
             items=[self._copySessionToForm(session) for session in sessions]
         )
@@ -799,7 +802,8 @@ class ConferenceApi(remote.Service):
             #websafe_key = ndb.Key(urlsafe=websafe_key)
             #if the key is not already in the users session wishlist - add it 
             if websafe_key not in profile.websafeSessionKey:
-            	profile.websafeSessionKey.append(websafe_key.urlsafe())
+            	profile.websafeSessionKey.append(websafe_key)
+            	profile.put()
                 return self._doProfile(request)
             #session already in wishlist
             else:
@@ -829,29 +833,57 @@ class ConferenceApi(remote.Service):
         )
 
     @endpoints.method(WishlistForm, ProfileForm,
-            path='profile/deleteSessionInWishlist',
-            http_method='DELETE',
-            name='deleteSessionInWishlist')
+    			path='profile/deleteSessionInWishlist',
+           		http_method='POST',
+            	name='deleteSessionInWishlist')
     def deleteSessionInWishlist(self, request):
         """remove a session from a users wishlist."""
-        #get current user       
-        currentUser = endpoints.get_current_user()
-        #if current user is not logged in 
-        if not currentUser:
-            raise endpoints.UnauthorizedException('User authorization is required') 
-        #get profile from currently logged in user       
-        profile = self._getProfileFromUser()
-        #get the session key for session to be removed from wishlist
-        sessionKey = request.websafeSessionKey
-        #if session is in wishlist remove it
-        if sessionKey in profile.websafeSessionKey:
-            profile.websafeSessionKey.remove(request.sessionKey)
-       	    profile.put()
-            return self._doProfile(request)
-        #session is not in wishlist
-        else:
-            return 'This session is not in your wishlist. You cannot delete a session that is not in your wishlist'
 
+
+        currentUser = endpoints.get_current_user()
+        #if user is not logged in 
+        if not currentUser:
+            raise endpoints.UnauthorizedException('User authorization is required')
+        #get current users profile 
+        profile = self._getProfileFromUser()
+        #websafekey of the given session 
+        websafe_key = request.websafeSessionKey
+        #could fail due to key not existing, or inability to decode
+        try:
+            #strip key 
+            #websafe_key = ndb.Key(urlsafe=websafe_key)
+            #if the key is not already in the users session wishlist - add it 
+            if websafe_key in profile.websafeSessionKey:
+                profile.websafeSessionKey.remove(websafe_key)
+                profile.put()
+                return self._doProfile(request)
+            #session already in wishlist
+            else:
+                return 'This session is not in your wishlist'
+        except ProtocolBufferDecodeError:
+            websafe_key = None
+
+
+
+  #       #get current user       
+  #       currentUser = endpoints.get_current_user()
+  #       #if current user is not logged in 
+  #       if not currentUser:
+  #           raise endpoints.UnauthorizedException('User authorization is required') 
+  #       #get profile from currently logged in user       
+  #       profile = self._getProfileFromUser()
+  #       #get the session key for session to be removed from wishlist
+		# if request.sessionKey in profile.websafeSessionKey:
+		# 	profile.websafeSessionKey.remove(request.sessionKey)
+		# 	profile.put()
+		# 	return self._doProfile(request)
+		# else:
+	 #    	return 'This session is not in your wishlist'
+  #       #session is not in wishlist
+  #       #else:
+  #        #   return 'This session is not in your wishlist. You cannot delete a session that is not in your wishlist'
+		# #except ProtocolBufferDecodeError:
+		# #	websafe_key = None
 
 
 # - - - Featured Speaker - - - - - - - - - - - - - - - - -

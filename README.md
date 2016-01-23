@@ -37,7 +37,7 @@ reflect the respective client IDs you have registered in the
 Sessions are implemented as children of conferences and rely on their conference key to exist and be located. That way we can always find and organize the created sessions by their associated conferences. This just makes sense, the sessions only exist as part of a conference otherwise they dont really mean anything. Because of that as far as a design choice goes it only made sense to create sessions that solely rely on their parent conference rather than be free floating. I thought about creating speaker as its own class which could be useful in order to define more information about the speaker but decided that it didn't actually need that the conference central app in my eyes is to be used as a more organizational type tool so having more information about a speaker wouldnt be necessary. When logging on and recording that you're organizing and attending an event you really just need to know who your speaker is, That being said, I defined the speaker as a string.
 
 
-createSession -> create a new session as a part of the given conference
+createSession -> create a new session as a part of the given conference, durations should be insered as a value of minutes.
 
 getConferenceSessions -> get all of the sessions associated with a given conference 
 
