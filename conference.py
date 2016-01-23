@@ -661,8 +661,8 @@ class ConferenceApi(remote.Service):
         #sessions = Session.query(Session.speaker == data['speaker']).count()
         #if there is more than one speaker set the featured
         
-        if sessions > 1:
-            taskqueue.add(params={'speaker': data['speaker'], 'websafeConferencekey': c_key}, url='/tasks/set_featured_speaker')
+        #if sessions > 1:
+        taskqueue.add(params={'speaker': data['speaker'], 'websafeConferencekey': c_key}, url='/tasks/set_featured_speaker')
 
         #return self._copySessionToForm(request)
         return self._copySessionToForm(s_key.get())
