@@ -73,7 +73,7 @@ DEFAULTS = {
 SESSION_DEFAULTS = {
     "highlights": "To Be Announced",
     "speaker": "To Be Announced",
-    "date": "0000-00-00",
+    "date": "2020-10-10",
     "duration": 60,
     "typeOfSession": "To Be Announced",
 }
